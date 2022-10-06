@@ -1,24 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+
+const exchangeRateUrl = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt"
 
 function App() {
+  const [exchangeRate, setExchangeRate] = useState(undefined)
+
+  useEffect(() => {
+    const fetchExchangeData = async () => {
+      const response = await fetch(exchangeRateUrl, {
+        method: 'GET',
+        // mode: 'no-cors',
+        // credentials: 'same-origin',
+        // headers: {
+        //   'Content-Type': 'text/plain;charset=UTF-8'
+        // },
+        // referrerPolicy: 'origin-when-cross-origin',
+        // redirect: 'follow'
+      })
+      console.log(response)
+      const dataText = await response.text()
+      console.log(dataText)
+    }
+
+    fetchExchangeData()
+  }, [])
+
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        Currency Converter
       </header>
+      <main>
+        <div className='Convert-box'>
+        </div>
+        <div className='Exchange-rate-table'>
+
+        </div>
+      </main>
     </div>
   );
 }
