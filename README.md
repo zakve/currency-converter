@@ -40,5 +40,5 @@ Oanda: [https://www.oanda.com/currency-converter/](https://www.oanda.com/currenc
 git clone https://github.com/zakve/currency-converter.git
 cd currency-converter
 npm i
-npm start
+npm run dev
 ```
