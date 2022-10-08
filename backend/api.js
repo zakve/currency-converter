@@ -8,10 +8,35 @@ app.use(cors())
 const port = 3001
 const exchangeRateUrl = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt"
 
+// TODO - add date select
 app.get("/exchange-rate", (req, res) => {
     request(exchangeRateUrl, (error, response, body) => {
         if (response.statusCode === 200) {
-            return res.send(body)
+            if (!body)
+                return res.status(400).send('No response data!')
+
+            // TODO - optimize to loop the data only once
+            // TODO - add data validation
+
+            const lineParse = body.split('\n')
+
+            // DATE
+            const date = lineParse[0]
+            const lastUpdate = date.split(' ')[0]
+
+            // TABLE HEADER
+            const tableHeader = lineParse[1].split('|')
+
+            // DATA
+            const data = []
+            for (let i = 2; i < lineParse.length; i++) {
+                if (lineParse[i]) {
+                    const line = lineParse[i]?.split('|')
+                    data.push(line)
+                }
+            }
+
+            return res.send({ lastUpdate, tableHeader, data })
         }
 
         res.status(500).send('Unable to connect to National Bank service!')
