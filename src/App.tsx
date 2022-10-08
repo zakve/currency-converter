@@ -16,14 +16,23 @@ align-items: center;
 const ExchangeRateTable = styled.div`
   `
 
-interface dataObject {
+interface ICurrency {
+  country: string,
+  currency: string,
+  amount: string,
+  code: string,
+  rate: string
+}
+
+interface IDataObject {
   lastUpdate: string,
   tableHeader: [string],
-  data: string[][]
+  data: [{ currency: ICurrency }]
 }
 
 function App() {
-  const [data, setData] = useState<dataObject | undefined>(undefined)
+  const [data, setData] = useState<IDataObject | undefined>(undefined)
+  const [amount, setAmount] = useState<string>('')
 
   useEffect(() => {
     const fetchExchangeData = async () => {
@@ -44,21 +53,33 @@ function App() {
   }, [])
 
   const calculateHandler = () => {
+    console.log(amount)
   }
 
   return (
     <Container>
       <main>
-        <h1>Central bank exchange rate fixing</h1>
+        <h1>Currency Converter</h1>
+        <h2>Central bank exchange rate fixing</h2>
         Last update: {data?.lastUpdate}
         <ConvertBox>
           <label htmlFor="amount">Amount</label>
-          <input type="text" id="amount" name="amount" /> CZK
+          &nbsp;
+          <input
+            id="amount"
+            type="text"
+            name="amount"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+          />
+          &nbsp;
+          CZK
+
           <Button
             primary
             onClick={calculateHandler}
           >
-            Calculate
+            Convert
           </Button>
         </ConvertBox>
         <ExchangeRateTable>
@@ -74,11 +95,17 @@ function App() {
             </thead>
             <tbody>
               {
-                data?.data.map((currency: string[], i: number) => {
+                data?.data.map((currency, i: number) => {
                   return (<tr key={i}>
                     {
-                      currency.map((col: string, j: number) => {
-                        return <td key={j}>{col}</td>
+                      Object.entries(currency).map((cur, i) => {
+                        return <React.Fragment key={i}>
+                          <td>{cur[1].country}</td>
+                          <td>{cur[1].currency}</td>
+                          <td>{cur[1].amount}</td>
+                          <td>{cur[1].code}</td>
+                          <td>{cur[1].rate}</td>
+                        </React.Fragment>
                       })
                     }
                   </tr>)

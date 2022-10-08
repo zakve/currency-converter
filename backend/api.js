@@ -32,7 +32,20 @@ app.get("/exchange-rate", (req, res) => {
             for (let i = 2; i < lineParse.length; i++) {
                 if (lineParse[i]) {
                     const line = lineParse[i]?.split('|')
-                    data.push(line)
+
+                    const map = new Map([
+                        [line[3],
+                        {
+                            country: line[0],
+                            currency: line[1],
+                            amount: line[2],
+                            code: line[3],
+                            rate: line[4]
+                        }]
+                    ]);
+                    const currency = Object.fromEntries(map);
+
+                    data.push(currency)
                 }
             }
 
