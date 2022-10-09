@@ -32,7 +32,9 @@ interface IDataObject {
 
 function App() {
   const [data, setData] = useState<IDataObject | undefined>(undefined)
-  const [amount, setAmount] = useState<string>('')
+  const [amount, setAmount] = useState<string | undefined>(undefined)
+  const [currencySelect, setCurrencySelect] = useState<string | undefined>(undefined)
+  const [calculated, setCalculated] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchExchangeData = async () => {
@@ -52,36 +54,94 @@ function App() {
     fetchExchangeData()
   }, [])
 
-  const calculateHandler = () => {
-    console.log(amount)
+  const handleSetAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCalculated(undefined)
+    setAmount(event.target.value)
+  }
+
+  const handleSetCurrencySelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrencySelect(event.target.value)
+  }
+
+  const handleSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+
+    // validation
+    if (!amount || isNaN(Number(amount)) || !currencySelect)
+      return alert('You must fill in the amount and currency')
+
+    // get currency data
+    const selectedCurrency = data?.data.find(line => Object.keys(line)[0] === currencySelect)
+
+    // calculate
+    if (selectedCurrency && currencySelect) {
+      const rate = Number(Object.values(selectedCurrency)[0].rate)
+      const currencyAmount = Number(Object.values(selectedCurrency)[0].amount)
+
+      setCalculated((Number(amount) / Number(rate) * Number(currencyAmount)).toString())
+    }
   }
 
   return (
     <Container>
       <main>
         <h1>Currency Converter</h1>
+        <ConvertBox>
+          <form
+            onSubmit={handleSubmit}
+          >
+
+            <label htmlFor="amount">Amount</label>
+            &nbsp;
+            <input
+              id="amount"
+              type="text"
+              name="amount"
+              value={amount || ''}
+              onChange={handleSetAmount}
+            />
+            &nbsp;
+            CZK
+            &nbsp;
+            to
+            &nbsp;
+            <select
+              id="convertTo"
+              name="convertTo"
+              value={currencySelect}
+              onChange={handleSetCurrencySelect}
+            >
+              <option value=''></option>
+              {
+                data?.data.map((currency, i: number) => {
+                  return (
+                    <option
+                      key={i}
+                      value={Object.keys(currency)}
+                    >
+                      {Object.keys(currency)}
+                    </option>
+                  )
+                })
+              }
+            </select>
+            <Button
+              primary
+              type="submit" value="Submit"
+            >
+              Convert
+            </Button>
+          </form>
+        </ConvertBox>
+        {
+          calculated &&
+          <>
+            {`${amount} CZK = ${calculated} ${currencySelect}`}
+          </>
+        }
+
         <h2>Central bank exchange rate fixing</h2>
         Last update: {data?.lastUpdate}
-        <ConvertBox>
-          <label htmlFor="amount">Amount</label>
-          &nbsp;
-          <input
-            id="amount"
-            type="text"
-            name="amount"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-          />
-          &nbsp;
-          CZK
-
-          <Button
-            primary
-            onClick={calculateHandler}
-          >
-            Convert
-          </Button>
-        </ConvertBox>
         <ExchangeRateTable>
           <table>
             <thead>
