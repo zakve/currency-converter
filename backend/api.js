@@ -40,7 +40,7 @@ app.get("/exchange-rate", (req, res) => {
                             currency: line[1],
                             amount: line[2],
                             code: line[3],
-                            rate: line[4]
+                            rate: line[4].replace(',', '.')
                         }]
                     ]);
                     const currency = Object.fromEntries(map);
