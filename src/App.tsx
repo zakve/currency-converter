@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import Button from './components/Button/Button';
+import Bg from './components/Bg/Bg';
+import H1 from './components/H1/H1';
+import Table from './components/Table/Tabel';
+import Header from './components/Header/Header';
+import Container from './components/Container/Container';
+import ConvertBox from './components/ConvertBox/ConvertBox';
 
 const exchangeRateUrl = "http://localhost:3001/exchange-rate"
-
-const Container = styled.div`
-  `
-
-const ConvertBox = styled.div`
-display: flex;
-flex-direction: row;
-align-items: center;
-  `
-
-const ExchangeRateTable = styled.div`
-  `
 
 interface ICurrency {
   country: string,
@@ -83,9 +77,13 @@ function App() {
   }
 
   return (
+    <Bg>
     <Container>
+      <Header>
+        <H1>Currency Converter</H1>
+        Lang
+      </Header>
       <main>
-        <h1>Currency Converter</h1>
         <ConvertBox>
           <form
             onSubmit={handleSubmit}
@@ -140,10 +138,12 @@ function App() {
           </>
         }
 
+      <section>
+        <Header>
         <h2>Central bank exchange rate fixing</h2>
         Last update: {data?.lastUpdate}
-        <ExchangeRateTable>
-          <table>
+        </Header>
+          <Table>
             <thead>
               <tr>
                 {
@@ -172,11 +172,12 @@ function App() {
                 })
               }
             </tbody>
-          </table>
-        </ExchangeRateTable>
+          </Table>
+      </section>
       </main>
     </Container>
-  );
+    </Bg>
+  )
 }
 
 export default App;
